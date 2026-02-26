@@ -56,21 +56,57 @@ class CheckoutController extends GetxController {
     _completed = true;
     _homeController.releaseSelectedSeats();
     Get.dialog(
-      AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
-        title: const Text('⏰ Tiempo expirado',
-            style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Tu reserva caducó. Los asientos han sido liberados.',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.offAllNamed(AppRoutes.home),
-            child: const Text('Aceptar',
-                style: TextStyle(color: Colors.orange)),
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: const Color(0xFF12122A),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.red.withOpacity(0.3)),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.timer_off_rounded,
+                    color: Colors.red, size: 40),
+              ),
+              const SizedBox(height: 16),
+              const Text('Tiempo expirado',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text(
+                'Tu reserva caducó y los asientos han sido liberados.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.offAllNamed(AppRoutes.home),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Volver al inicio',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       barrierDismissible: false,
     );
@@ -80,24 +116,70 @@ class CheckoutController extends GetxController {
     _timer?.cancel();
     _completed = true;
     final seats = selectedSeatIds.join(', ');
-    final price = totalPrice;
+    final price = totalPrice + 2000;
     _homeController.markSelectedAsOccupied();
     Get.dialog(
-      AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
-        title: const Text('🎉 ¡Pago exitoso!',
-            style: TextStyle(color: Colors.white)),
-        content: Text(
-          'Asientos: $seats\nTotal: \$${price.toStringAsFixed(0)} COP\n\n¡Disfruta la película!',
-          style: const TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.offAllNamed(AppRoutes.home),
-            child: const Text('¡Listo!',
-                style: TextStyle(color: Colors.green)),
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: const Color(0xFF12122A),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.green.withOpacity(0.3)),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check_circle_rounded,
+                    color: Colors.green, size: 40),
+              ),
+              const SizedBox(height: 16),
+              const Text('¡Pago exitoso!',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text('Asientos: $seats',
+                  style: const TextStyle(color: Colors.white54, fontSize: 13)),
+              const SizedBox(height: 4),
+              Text('\$${price.toStringAsFixed(0)} COP',
+                  style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text(
+                '¡Disfruta la película! 🎬\nTu entrada fue enviada al correo.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.offAllNamed(AppRoutes.movies),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Ir al inicio',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       barrierDismissible: false,
     );
