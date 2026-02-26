@@ -1,44 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../theme/theme_controller.dart';
 import 'detail_controller.dart';
 
 class DetailView extends GetView<DetailController> {
   const DetailView({super.key});
 
+  ThemeController get t => Get.find<ThemeController>();
+
   @override
   Widget build(BuildContext context) {
     final movie = controller.movie;
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A1A),
+    return Obx(() => Scaffold(
+      backgroundColor: t.background,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 380,
             pinned: true,
-            backgroundColor: const Color(0xFF0A0A1A),
-            iconTheme: const IconThemeData(color: Colors.white),
+            backgroundColor: t.background,
+            iconTheme: IconThemeData(color: t.textPrimary),
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    movie.imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: const Color(0xFF1E1E3A),
-                      child: const Icon(Icons.movie_rounded,
-                          color: Colors.white24, size: 60),
-                    ),
-                  ),
+                  Image.asset(movie.imageUrl, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: t.cardColor,
+                        child: Icon(Icons.movie_rounded,
+                            color: t.textSecondary, size: 60),
+                      )),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.3),
-                          const Color(0xFF0A0A1A),
-                        ],
+                        colors: [Colors.black.withOpacity(0.3), t.background],
                       ),
                     ),
                   ),
@@ -56,19 +53,16 @@ class DetailView extends GetView<DetailController> {
                     children: [
                       Expanded(
                         child: Text(movie.title,
-                            style: const TextStyle(
-                                color: Colors.white,
+                            style: TextStyle(
+                                color: t.textPrimary,
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold)),
                       ),
                       if (movie.isNew)
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                              color: Colors.red, borderRadius: BorderRadius.circular(6)),
                           child: const Text('ESTRENO',
                               style: TextStyle(
                                   color: Colors.white,
@@ -89,17 +83,14 @@ class DetailView extends GetView<DetailController> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text('Sinopsis',
+                  Text('Sinopsis',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: t.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(movie.synopsis,
-                      style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          height: 1.6)),
+                      style: TextStyle(color: t.textSecondary, fontSize: 14, height: 1.6)),
                   const SizedBox(height: 32),
                   _buildShowtimes(),
                   const SizedBox(height: 20),
@@ -109,16 +100,13 @@ class DetailView extends GetView<DetailController> {
                       onPressed: controller.goToSeats,
                       icon: const Icon(Icons.event_seat_rounded),
                       label: const Text('Seleccionar Asientos',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14)),
-                        elevation: 8,
-                        shadowColor: Colors.red.withOpacity(0.4),
                       ),
                     ),
                   ),
@@ -129,7 +117,7 @@ class DetailView extends GetView<DetailController> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _chip(IconData icon, String label, Color color) => Container(
@@ -144,11 +132,7 @@ class DetailView extends GetView<DetailController> {
       children: [
         Icon(icon, color: color, size: 13),
         const SizedBox(width: 4),
-        Text(label,
-            style: TextStyle(
-                color: color,
-                fontSize: 12,
-                fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
       ],
     ),
   );
@@ -156,11 +140,8 @@ class DetailView extends GetView<DetailController> {
   Widget _buildShowtimes() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const Text('Horarios de Hoy',
-          style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+      Text('Horarios de Hoy',
+          style: TextStyle(color: t.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 12),
       Wrap(
         spacing: 10,
@@ -169,18 +150,15 @@ class DetailView extends GetView<DetailController> {
             .map((time) => GestureDetector(
           onTap: controller.goToSeats,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              border:
-              Border.all(color: Colors.red.withOpacity(0.6)),
+              border: Border.all(color: Colors.red.withOpacity(0.6)),
               borderRadius: BorderRadius.circular(10),
               color: Colors.red.withOpacity(0.1),
             ),
             child: Text(time,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600)),
+                style: TextStyle(
+                    color: t.textPrimary, fontWeight: FontWeight.w600)),
           ),
         ))
             .toList(),

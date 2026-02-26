@@ -2,33 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../data/models/movie_model.dart';
 import '../../routes/app_routes.dart';
+import '../theme/theme_controller.dart';
 import 'movies_controller.dart';
 
 class MoviesView extends GetView<MoviesController> {
   const MoviesView({super.key});
 
+  // Acceso rápido al theme
+  ThemeController get t => Get.find<ThemeController>();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A1A),
+    return Obx(() => Scaffold(
+      backgroundColor: t.background,
       body: CustomScrollView(
         slivers: [
           _buildAppBar(),
           SliverToBoxAdapter(child: _buildBanner()),
           SliverToBoxAdapter(child: _buildSectionTitle('🎬 En Cartelera')),
-          SliverToBoxAdapter(child: _buildHorizontalList(controller.nowPlaying)),
-          SliverToBoxAdapter(child: _buildSectionTitle('🆕 Próximos Estrenos')),
-          SliverToBoxAdapter(child: _buildHorizontalList(controller.comingSoon)),
-          SliverToBoxAdapter(child: _buildSectionTitle('⭐ Todas las Películas')),
+          SliverToBoxAdapter(
+              child: _buildHorizontalList(controller.nowPlaying)),
+          SliverToBoxAdapter(
+              child: _buildSectionTitle('🆕 Próximos Estrenos')),
+          SliverToBoxAdapter(
+              child: _buildHorizontalList(controller.comingSoon)),
+          SliverToBoxAdapter(
+              child: _buildSectionTitle('⭐ Todas las Películas')),
           SliverToBoxAdapter(child: _buildAllMoviesGrid()),
           const SliverToBoxAdapter(child: SizedBox(height: 30)),
         ],
       ),
-    );
+    ));
   }
 
-  Widget _buildAppBar() => SliverAppBar(
-    backgroundColor: const Color(0xFF0A0A1A),
+  Widget _buildAppBar() => Obx(() => SliverAppBar(
+    backgroundColor: t.surface,
     floating: true,
     title: Row(
       children: [
@@ -42,24 +50,29 @@ class MoviesView extends GetView<MoviesController> {
               color: Colors.white, size: 18),
         ),
         const SizedBox(width: 10),
-        const Text('CineApp',
+        Text('CineApp',
             style: TextStyle(
-                color: Colors.white,
+                color: t.textPrimary,
                 fontWeight: FontWeight.bold,
                 fontSize: 20)),
       ],
     ),
     actions: [
       IconButton(
-        icon: const Icon(Icons.search, color: Colors.white),
+        icon: Icon(Icons.search, color: t.textPrimary),
         onPressed: () {},
       ),
       IconButton(
-        icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-        onPressed: () {},
+        icon: Icon(
+          t.isDark.value
+              ? Icons.light_mode_rounded
+              : Icons.dark_mode_rounded,
+          color: t.isDark.value ? Colors.amber : Colors.blueGrey,
+        ),
+        onPressed: t.toggleTheme,
       ),
     ],
-  );
+  ));
 
   Widget _buildBanner() => Obx(() => SizedBox(
     height: 220,
@@ -77,11 +90,11 @@ class MoviesView extends GetView<MoviesController> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: AssetImage(movie.imageUrl), // ✅ Asset
+          image: AssetImage(movie.imageUrl),
           fit: BoxFit.cover,
           onError: (_, __) {},
         ),
-        color: const Color(0xFF1E1E3A), // fallback si falla
+        color: t.cardColor,
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -144,14 +157,14 @@ class MoviesView extends GetView<MoviesController> {
     ),
   );
 
-  Widget _buildSectionTitle(String title) => Padding(
+  Widget _buildSectionTitle(String title) => Obx(() => Padding(
     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
     child: Text(title,
-        style: const TextStyle(
-            color: Colors.white,
+        style: TextStyle(
+            color: t.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.bold)),
-  );
+  ));
 
   Widget _buildHorizontalList(RxList<Movie> movies) => Obx(() => SizedBox(
     height: 200,
@@ -163,7 +176,7 @@ class MoviesView extends GetView<MoviesController> {
     ),
   ));
 
-  Widget _buildMovieCard(Movie movie) => GestureDetector(
+  Widget _buildMovieCard(Movie movie) => Obx(() => GestureDetector(
     onTap: () => Get.toNamed(AppRoutes.detail, arguments: movie),
     child: Container(
       width: 120,
@@ -179,9 +192,9 @@ class MoviesView extends GetView<MoviesController> {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 errorBuilder: (_, __, ___) => Container(
-                  color: const Color(0xFF1E1E3A),
-                  child: const Icon(Icons.movie_rounded,
-                      color: Colors.white24, size: 30),
+                  color: t.cardColor,
+                  child: Icon(Icons.movie_rounded,
+                      color: t.textSecondary, size: 30),
                 ),
               ),
             ),
@@ -190,8 +203,8 @@ class MoviesView extends GetView<MoviesController> {
           Text(movie.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  color: Colors.white,
+              style: TextStyle(
+                  color: t.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600)),
           Row(
@@ -199,14 +212,14 @@ class MoviesView extends GetView<MoviesController> {
               const Icon(Icons.star, color: Colors.amber, size: 11),
               const SizedBox(width: 3),
               Text('${movie.score}',
-                  style: const TextStyle(
-                      color: Colors.white54, fontSize: 11)),
+                  style: TextStyle(
+                      color: t.textSecondary, fontSize: 11)),
             ],
           ),
         ],
       ),
     ),
-  );
+  ));
 
   Widget _buildAllMoviesGrid() => Obx(() => GridView.builder(
     shrinkWrap: true,
